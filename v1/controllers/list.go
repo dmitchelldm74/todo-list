@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	db "todo-list/database"
 	. "todo-list/v1/models"
@@ -29,8 +30,15 @@ type CreateTodoListInput struct {
 func createTodoList(c *gin.Context) {
 	// Validate input
 	var input CreateTodoListInput
+	accountId, hasAccountId := c.GetPostForm("accountId")
+	listName, hasListName := c.GetPostForm("listName")
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if hasAccountId && hasListName {
+		parsedAccountId, _ := strconv.Atoi(accountId)
+
+		input.AccountId = uint(parsedAccountId)
+		input.TodoListName = listName
+	} else if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
