@@ -13,3 +13,6 @@
 *.dll
 *.so
 *.dylib
+
+# Compiled program
+todo-list
