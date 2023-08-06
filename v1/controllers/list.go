@@ -14,6 +14,7 @@ func BuildListGroup(router *gin.RouterGroup) *gin.RouterGroup {
 	{
 		list.POST("/create", createTodoList)
 		list.DELETE("/delete", removeTodoList)
+		list.GET("/all", listAllTodoLists)
 	}
 	return list
 }
@@ -47,4 +48,19 @@ func createTodoList(c *gin.Context) {
 // Remove a todo list
 func removeTodoList(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"removed": true})
+}
+
+// GET /v1/list/all
+// List all todo lists for an account
+func listAllTodoLists(c *gin.Context) {
+	var lists []TodoList
+	var accountId = c.Query("accountId")
+
+	if accountId == "" {
+		db.ConnectDB().Find(&lists)
+	} else {
+		db.ConnectDB().Where("account_id = ?", accountId).Find(&lists)
+	}
+
+	c.JSON(http.StatusOK, lists)
 }
